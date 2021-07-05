@@ -1,0 +1,16 @@
+<!DOCTYPE html>     <!-- html이라고 알려줌 -->
+<html>              <!-- html 범위 -->
+    <head>              <!--설정, 속성-->
+        <title>Login Pege</title>
+        <meta charset="utf-8">
+    </head>       
+    <body>
+        <h1>Login Page</h1>
+        <form action="/login" method="POST">          <!--form : 입력 받은 값을 서버쪽으로 전송, action 어디로 보낼지, method 보내는 방식-->
+            <input type="email" name="email" placeholder="email을 입력해주세요." />           <!--사용자가 입력할 수 있는 환경, flask는 name 속성값으로 데이터를 받는다-->
+            <input type="password" name="password" placeholder="비밀번호를 입력해주세요."/>
+            <input type="submit" value="확인"/>             <!--버튼을 누르는 순간 form-input태그들의 정보를 서버에 전송-->
+        </form>
+    </body>
+
+</html>

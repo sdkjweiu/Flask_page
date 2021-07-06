@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Main Page</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        {% if get_flashed_messages() %}    {# get_flashed_messages() : jinja2 템플릿에서 flash를 갖고 오는 방법 #}
+            {% for message in get_flashed_messages() %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        {% if session.get('user') == None %}    {# session.get('user') 만 써도 된다  #}
+            <a href='/login'>로그인</a>
+        {% else %}
+            <a href='/body_edit'>글쓰기</a>
+            <a href='/logout'>로그아웃</a>
+        {% endif %}
+
+        {% if post %}
+            {% for i in post %}  <!-- 리스트, 튜플, range(), string (=iterator객체) (반복(=나열) 되어있는) 은 for문으로 돌리기 가능 -->
+                                <!--2차원 튜플인 post에서 1차원으로 돌리기 위해 for문을 사용한다, post(게시물)의 갯수만큼(튜플묶음2개=2번) 반복-->
+                <a href='/body/{{i[0]}}'>{{ i[0] }}</a>      <!--2차원 튜플 tuple=((1,2,3), (4,5.6))-->
+                {{ i[1] }}
+                {{ i[2] }}
+            {% endfor %}
+        {% else %}
+
+        {% endif %}
+    </body>
+</html>

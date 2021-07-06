@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, flash
+from datetime import datetime
 import pymysql
 
 import sys
@@ -7,11 +8,20 @@ import pymysql_con
 
 app = Flask(__name__)
 
-
+app.config['SECRET_KEY'] = 'test'
 
 @app.route('/')     # 클라이언트에서 보내온 request를 받는 역할
 def index():
-    return '''index page'''
+    conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+    cur = conn.cursor()
+    cur.execute('select title, writer, stampdate from post')
+    post = cur.fetchall()
+    print(post)
+    for i in post:
+        print(i)
+    cur.close()
+    conn.close()
+    return render_template('index.html', post=post)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -24,15 +34,22 @@ def login():
         print(request.form.get('password'))
         print(request.form['email'])
         print(request.form['password'])
-        if cur.execute('select email, password from users where email="%s" and password="%s"' %(request.form.get('email'), request.form.get('password'))):
+        if cur.execute('select email, password, nickname from users where email="%s" and password="%s"' %(request.form.get('email'), request.form.get('password'))):
+            user = cur.fetchone()
+            session['user'] = user[2]
             cur.close()
             conn.close()
-            print('ABCDEF')
+            
             return redirect('/')
 
         cur.close()
         conn.close()
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
 
 
 @app.route('/regis', methods=['GET', 'POST'])
@@ -46,6 +63,33 @@ def regis():
         conn.close()
         return redirect('/login')
     return render_template('regis.html')
+
+@app.route('/body_edit', methods=['GET', 'POST'])
+def body_edit():
+    if session.get('user') == None:
+        flash("로그인을 해야합니다")
+        return redirect('/')
+    if request.method == 'POST':
+        conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+        cur = conn.cursor()
+        cur.execute('insert into post (title, body, stampdate, writer) values ("%s","%s","%s","%s")' %(request.form.get('title'), request.form.get('body'), datetime.now().strftime('%Y-%m-%d %H:%M'), session.get('user')))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect('/')
+    return render_template('body_edit.html')
+
+
+@app.route('/body/<text>')
+def body(text):
+    conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+    cur = conn.cursor()
+    cur.execute('select * from post where title="%s"' %(text))
+    body=cur.fetchone()
+    cur.close()
+    conn.close()
+    return render_template('body.html', body=body)
+
 
 
 if __name__ == '__main__':      # 파이썬이 이 파일을 인터프리팅할때 해당 조건문의 실행문을 실행시키는(True) 조건 내용, 이 파일을 직접 불러올때만 True로 바뀌고 그 밑에 코드를 실행,

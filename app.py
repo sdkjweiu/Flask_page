@@ -14,11 +14,8 @@ app.config['SECRET_KEY'] = 'test'
 def index():
     conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
     cur = conn.cursor()
-    cur.execute('select title, writer, stampdate from post')
+    cur.execute('select p.title, u.nickname, p.stampdate, p.post_id from post p, users u where p.user_id = u.user_id')
     post = cur.fetchall()
-    print(post)
-    for i in post:
-        print(i)
     cur.close()
     conn.close()
     return render_template('index.html', post=post)
@@ -30,13 +27,9 @@ def login():
     conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
     cur = conn.cursor()
     if request.method == 'POST':                      # 어떤 방식(method)으로 보냈는지 확인
-        print(request.form.get('email'))
-        print(request.form.get('password'))
-        print(request.form['email'])
-        print(request.form['password'])
-        if cur.execute('select email, password, nickname from users where email="%s" and password="%s"' %(request.form.get('email'), request.form.get('password'))):
+        if cur.execute('select email, password, nickname, user_id from users where email="%s" and password="%s"' %(request.form.get('email'), request.form.get('password'))):
             user = cur.fetchone()
-            session['user'] = user[2]
+            session['user'] = user[3]
             cur.close()
             conn.close()
             
@@ -72,7 +65,7 @@ def body_edit():
     if request.method == 'POST':
         conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
         cur = conn.cursor()
-        cur.execute('insert into post (title, body, stampdate, writer) values ("%s","%s","%s","%s")' %(request.form.get('title'), request.form.get('body'), datetime.now().strftime('%Y-%m-%d %H:%M'), session.get('user')))
+        cur.execute('insert into post (title, body, stampdate, user_id) values ("%s","%s","%s","%s")' %(request.form.get('title'), request.form.get('body'), datetime.now().strftime('%Y-%m-%d %H:%M'), session.get('user')))
         conn.commit()
         cur.close()
         conn.close()
@@ -84,12 +77,27 @@ def body_edit():
 def body(text):
     conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
     cur = conn.cursor()
-    cur.execute('select * from post where title="%s"' %(text))
+    cur.execute('select p.title, p.body, p.stampdate, u.nickname, p.post_id from post p, users u where p.user_id = u.user_id and p.post_id="%s"  ' %(text))
     body=cur.fetchone()
+    cur.execute('select u.nickname, c.contents, c.stampdate from comment c, users u where u.user_id = c.user_id and c.post_id = "%s"' %(body[4]))
+    comment=cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('body.html', body=body)
+    return render_template('body.html', body=body, ment=comment, text=text)
 
+@app.route('/ment', methods=['POST'])
+def ment():
+    if session.get('user') == None:
+        flash("로그인을 해야합니다")
+        return redirect('/')
+    if request.method == 'POST':
+        conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+        cur = conn.cursor()
+        cur.execute('insert into comment (user_id, contents, stampdate, post_id) values ("%s","%s","%s","%s")' %(session.get('user'),request.form.get('co_ment'), datetime.now().strftime('%Y-%m-%d %H:%M'), request.form.get('hide_b')))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect('/body/'+request.form.get('hide_b'))
 
 
 if __name__ == '__main__':      # 파이썬이 이 파일을 인터프리팅할때 해당 조건문의 실행문을 실행시키는(True) 조건 내용, 이 파일을 직접 불러올때만 True로 바뀌고 그 밑에 코드를 실행,

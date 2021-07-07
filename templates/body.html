@@ -6,8 +6,22 @@
     </head>
     <body>
         제목 : {{ body[0] }}
-        작성자 : {{ body[1] }}
+        작성자 : {{ body[3] }}
         작성일 : {{ body[2] }}
-        내용 : {{ body[3] }}
+        내용 : {{ body[1] }}
+        댓글 : 
+        {% for i in ment%}
+            {{ i[0] }}
+            {{ i[1] }}
+            {{ i[2] }}
+        {% endfor %}
+        
+        <form action="/ment" method="POST">
+            <textarea placeholder="댓글" name="co_ment"></textarea>
+            <input type="submit" value="입력"/>
+            <input type="hidden" value="{{ body[4] }}" name="hide_b"/>
+
+        </form>
+        
     </body>
 </html>

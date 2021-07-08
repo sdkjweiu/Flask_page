@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>글 수정</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <form action="/body_update/{{po_st}}" method="POST">
+            <input type="text" name="udt_title" value="{{p_post[0]}}"/>
+            <textarea placeholder="내용" name="udt_body">{{p_post[1]}}</textarea>
+            <input type="submit" value="수정"/>
+            <a href="/body/{{po_st}}">취소</a>
+        </form>
+    </body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>댓글 수정</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1>댓글 수정</h1>
+        <form action="/comment_update/{{ co_udt }}" method="POST">
+            <textarea placeholder="댓글" name="co_body">{{co_con[0]}}</textarea>
+            <input type="submit" value="수정"/>
+            <a href="/body/{{co_con[1]}}">취소</a>
+        </form>
+    </body>
+</html>

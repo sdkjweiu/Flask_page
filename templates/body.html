@@ -3,6 +3,7 @@
     <head>
         <title>{{ body[0] }}</title>
         <meta charset="utf-8">
+        <a href="/">메인화면</a>
     </head>
     <body>
         제목 : {{ body[0] }}
@@ -10,18 +11,23 @@
         작성일 : {{ body[2] }}
         내용 : {{ body[1] }}
         <a href="/body_update/{{text}}">수정</a>
+        <a href="/body_delete/{{text}}">삭제</a>
         댓글 : 
+        
         {% for i in ment%}
             {{ i[0] }}
             {{ i[1] }}
             {{ i[2] }}
+            
+            <a href="/comment_update/{{ i[3] }}">댓글수정</a>
+            <a href="/comment_delete/{{ i[3] }}">댓글삭제</a>
         {% endfor %}
         
         <form action="/ment/{{body[4]}}" method="POST">
             <textarea placeholder="댓글" name="co_ment"></textarea>
             <input type="submit" value="입력"/>
-            <input type="hidden" value="{{ body[4] }}" name="hide_b"/>
         </form>
+        
         
     </body>
 </html>

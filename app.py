@@ -20,6 +20,7 @@ def index():
     conn.close()
     return render_template('index.html', post=post)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # print(request.form['email'])        #request.form : 딕셔너리 구조로 서버에서부터 값을 넣는다
@@ -57,6 +58,7 @@ def regis():
         return redirect('/login')
     return render_template('regis.html')
 
+
 @app.route('/body_edit', methods=['GET', 'POST'])
 def body_edit():
     if session.get('user') == None:
@@ -71,6 +73,7 @@ def body_edit():
         conn.close()
         return redirect('/')
     return render_template('body_edit.html')
+
 
 @app.route('/body_update/<po_st>', methods=['GET','POST'])
 def body_update(po_st):
@@ -92,6 +95,19 @@ def body_update(po_st):
     return render_template('body_update.html', p_post=p_post, po_st=po_st)
 
 
+@app.route('/body_delete/<dele>')
+def body_delete(dele):
+    if session.get('user') == session.get('p.user_id'):
+        conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+        cur = conn.cursor()
+        cur.execute('delete from post where post_id = "%s"' %(dele))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect('/')
+    else:
+        return redirect('/')
+    
 
 @app.route('/body/<text>')
 def body(text):
@@ -100,11 +116,12 @@ def body(text):
     cur.execute('select p.title, p.body, p.stampdate, u.nickname, p.post_id, p.user_id from post p, users u where p.user_id = u.user_id and p.post_id="%s"  ' %(text)) #게시물 보여주기용으로 데이터 조회
     body=cur.fetchone()
     session['p.user_id'] = body[5]
-    cur.execute('select u.nickname, c.contents, c.stampdate from comment c, users u where u.user_id = c.user_id and c.post_id = "%s"' %(body[4])) #어느 게시물의 해당하는 댓글인지 확인하기 위해서 아까 body[4](post_id)를 이용
+    cur.execute('select u.nickname, c.contents, c.stampdate, c.comment_id from comment c, users u where u.user_id = c.user_id and c.post_id = "%s"' %(body[4])) #어느 게시물의 해당하는 댓글인지 확인하기 위해서 아까 body[4](post_id)를 이용
     comment=cur.fetchall()
     cur.close()
     conn.close()
     return render_template('body.html', body=body, ment=comment, text=text)
+
 
 @app.route('/ment/<abc>', methods=['POST'])
 def ment(abc):
@@ -119,6 +136,104 @@ def ment(abc):
         cur.close()
         conn.close()
         return redirect('/body/'+abc)
+
+
+@app.route('/comment_update/<co_udt>', methods=['GET','POST'])
+def ment_update(co_udt):
+    if session.get('user') == session.get('p.user_id'):
+        conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+        cur = conn.cursor()
+        cur.execute('select contents, post_id from comment where comment_id ="%s"' %(co_udt))
+        co_con = cur.fetchone()
+
+        if request.method == 'POST':
+            cur.execute('update comment set contents="%s" where comment_id = "%s"'%(request.form.get('co_body'), co_udt))
+            conn.commit()
+            cur.close()
+            conn.close()
+            return redirect('/body/'+str(co_con[1]))    # 문자형+숫자형은 못한다, 문자+문자, 숫자+숫자로 바꿔줘야한다.
+
+        cur.close()
+        conn.close()
+    return render_template('comment_update.html', co_con=co_con, co_udt=co_udt)
+
+
+@app.route('/comment_delete/<co_del>')
+def comment_delete(co_del):
+    if session.get('user') == session.get('p.user_id'):
+        conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+        cur = conn.cursor()
+        cur.execute('select post_id from comment where comment_id="%s"' %(co_del))
+        c_p_id = cur.fetchone()
+        cur.execute('delete from comment where comment_id ="%s" ' %(co_del))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect('/body/'+str(c_p_id[0]))
+    else:
+        return redirect('/')
+
+
+@app.route('/profile')
+def profile():
+    conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+    cur = conn.cursor()
+    cur.execute('select nickname from users where user_id="%s"' %(session.get('user')))
+    nickname = cur.fetchone()
+    cur.close()
+    conn.close()
+    return render_template('profile.html', nickname=nickname)
+
+
+@app.route('/nickname_edit', methods=['GET', 'POST'])
+def nickname_edit():
+    conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+    cur = conn.cursor()
+    cur.execute('select nickname from users where user_id="%s"' %(session.get('user')))
+    nickname = cur.fetchone()
+
+    if request.method == 'POST':
+        cur.execute('update users set nickname="%s" where user_id ="%s"' %(request.form.get('n_nickname'), session.get('user')))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect('/profile')
+        
+    return render_template('nickname_edit.html', nickname=nickname)
+
+
+@app.route('/password_edit', methods=['GET', 'POST'])
+def password_edit():
+    conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+    cur = conn.cursor()
+    cur.execute('select password from users where user_id = "%s"' %(session.get('user')))
+    p_password = cur.fetchone()
+
+    if request.method == 'POST':
+        if request.form.get('edit_password') == request.form.get('edit_password2') and p_password != request.form.get('edit_password'):
+            cur.execute('update users set password = "%s" where user_id ="%s"'  %(request.form.get('edit_password'), session.get('user')))
+            conn.commit()
+            cur.close()
+            conn.close()
+            return redirect('/profile')
+        return redirect('/')
+
+    return render_template('password_edit.html')
+
+
+@app.route('/user_delete', methods=['GET', 'POST'])
+def user_delete():
+    if request.method == 'POST':
+        conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
+        cur = conn.cursor()
+        cur.execute('delete from users where user_id = "%s"' %(session.get('user')))
+        conn.commit()
+        cur.close()
+        conn.close()
+        session.clear()
+        return redirect('/')
+
+    return render_template('user_delete.html')
 
 
 if __name__ == '__main__':      # 파이썬이 이 파일을 인터프리팅할때 해당 조건문의 실행문을 실행시키는(True) 조건 내용, 이 파일을 직접 불러올때만 True로 바뀌고 그 밑에 코드를 실행,

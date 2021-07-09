@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>닉네임 변경</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1>닉네임 변경</h1>
+        <form action="/nickname_edit" method="POST">
+            <input type="text" value="{{ nickname[0] }}" name="n_nickname" placeholder="새 닉네임"/>
+            <input type="submit" value="변경"/>
+            <a href="/profile">취소</a>
+        </form>
+    </body>
+</html>

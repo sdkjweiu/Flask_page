@@ -3,31 +3,75 @@
     <head>
         <title>{{ body[0] }}</title>
         <meta charset="utf-8">
-        <a href="/">메인화면</a>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/body.css') }}" />
+        <div id="main-bar" >
+            <a href='/' class="alignleft">메인</a>
+        {% if session.get('user') == None %}    {# session.get('user') 만 써도 된다  #}
+            <a href='/login' class="alignright">로그인</a>
+        {% else %}
+        <a href='/body_edit' class="alignright_1">글쓰기</a>
+        <a href='/profile' class="alignright">프로필</a>
+        <a href='/logout' class="alignright">로그아웃</a>
+        {% endif %}
+        </div>
     </head>
     <body>
-        제목 : {{ body[0] }}
-        작성자 : {{ body[3] }}
-        작성일 : {{ body[2] }}
-        내용 : {{ body[1] }}
-        <a href="/body_update/{{text}}">수정</a>
-        <a href="/body_delete/{{text}}">삭제</a>
-        댓글 : 
+        <div id="body_head">
+        {{ body[0] }}
+        </div>
+
+        <div id="body_sum">
+            <div class="body_write"> {{ body[3] }}
+            &nbsp;&nbsp; {{ body[2] }}</div>
+            {% if session.get('user') == session.get('p.user_id') %}
+            <div class="body_edit">
+                <a href="/body_update/{{text}}">수정</a>
+                <a href="/body_delete/{{text}}">삭제</a></div>
+            {% endif %}
+        </div>
         
-        {% for i in ment%}
-            {{ i[0] }}
-            {{ i[1] }}
-            {{ i[2] }}
+        <div id="body_content">내용 : {{ body[1] }}</div>
+
+        <hr>
+
+        <div id="comment_sum">
+            <div class="comment">
+                댓글
+            </div>
             
-            <a href="/comment_update/{{ i[3] }}">댓글수정</a>
-            <a href="/comment_delete/{{ i[3] }}">댓글삭제</a>
-        {% endfor %}
-        
+            </div>
+        </div>
+
+        <div id="contents">
+        <table>
+            <thead>
+                <tr>
+                    <th>nickname</th>
+                    <th>contents</th>
+                    <th>stampdate</th>                
+                </tr>
+            </thead>
+
+            <tr>
+            {% for i in ment%}
+                <td class="con">{{ i[0] }}</td>
+                <td class="con">{{ i[1] }}</td>
+                <td class="con">{{ i[2] }}</td>
+                
+                <td><a href="/comment_update/{{ i[3] }}">댓글수정</a></td>
+                <td><a href="/comment_delete/{{ i[3] }}">댓글삭제</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+            
+        </div>
+
+        <div id="comment-bottom">
         <form action="/ment/{{body[4]}}" method="POST">
-            <textarea placeholder="댓글" name="co_ment"></textarea>
+            <textarea style="resize: none;"placeholder="댓글" name="co_ment"></textarea>
             <input type="submit" value="입력"/>
         </form>
-        
+        </div>
         
     </body>
 </html>

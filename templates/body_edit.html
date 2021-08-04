@@ -3,6 +3,16 @@
     <head>
         <title>작성 중</title>
         <meta charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/body_edit.css') }}" />
+        <div id="main-bar" >
+            <a href='/' class="alignleft">메인</a>
+        {% if session.get('user') == None %}    {# session.get('user') 만 써도 된다  #}
+            <a href='/login' class="alignright">로그인</a>
+        {% else %}
+            <a href='/profile' class="alignright">프로필</a>
+            <a href='/logout' class="alignright">로그아웃</a>
+        {% endif %}
+        </div>
     </head>
     <body>
         <h1>글쓰기</h1>

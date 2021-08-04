@@ -3,13 +3,29 @@
     <head>
         <title>글 수정</title>
         <meta charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/body_update.css') }}" />
+        <div id="main-bar" >
+            <a href='/' class="alignleft">메인</a>
+        {% if session.get('user') == None %}    {# session.get('user') 만 써도 된다  #}
+            <a href='/login' class="alignright">로그인</a>
+        {% else %}
+            <a href='/body_edit' class="alignright_1">글쓰기</a>
+            <a href='/profile' class="alignright">프로필</a>
+            <a href='/logout' class="alignright">로그아웃</a>
+        {% endif %}
+        </div>
     </head>
     <body>
-        <form action="/body_update/{{po_st}}" method="POST">
-            <input type="text" name="udt_title" value="{{p_post[0]}}"/>
-            <textarea placeholder="내용" name="udt_body">{{p_post[1]}}</textarea>
-            <input type="submit" value="수정"/>
-            <a href="/body/{{po_st}}">취소</a>
-        </form>
+        <div id="title">
+        <h1>글 수정</h1></div>
+
+        <div id="mainform">
+            <form action="/body_update/{{po_st}}" method="POST">
+                <input type="text" name="udt_title" value="{{p_post[0]}}"/>
+                <textarea placeholder="내용" name="udt_body">{{p_post[1]}}</textarea>
+                <input type="submit" value="수정"/>
+                <a href="/body/{{po_st}}">취소</a>
+            </form>
+        </div>
     </body>
 </html>

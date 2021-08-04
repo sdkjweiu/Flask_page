@@ -3,9 +3,21 @@
     <head>
         <title>프로필</title>
         <meta charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
+        <div id="main-bar" >
+            <a href='/' class="alignleft">메인</a>
+        {% if session.get('user') == None %}    {# session.get('user') 만 써도 된다  #}
+            <a href='/login' class="alignright">로그인</a>
+        {% else %}
+            <a href='/body_edit' class="alignright_1">글쓰기</a>
+            <a href='/profile' class="alignright">프로필</a>
+            <a href='/logout' class="alignright">로그아웃</a>
+        {% endif %}
+        </div>
     </head>
     <body>
-        <h1>프로필</h1>
+        <div id="body_head">
+        <h1>프로필</h1></div>
         <form>
             {{ nickname[0] }} <a href="/nickname_edit">닉네임 변경</a>
             <a href="/password_edit">비밀번호 변경</a>

@@ -3,9 +3,17 @@
     <head>              <!--설정, 속성-->
         <title>Login Pege</title>
         <meta charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+        <div id="main-bar" >
+            <a href='/' class="alignleft">메인</a>
+        {% if session.get('user') == None %}    {# session.get('user') 만 써도 된다  #}
+            <a href='/regis' class="alignright">회원가입</a>
+        {% endif %}
+        
+        </div>
     </head>       
     <body>
-        <h1>Login Page</h1>
+        <h1>Login</h1>
         <form action="/login" method="POST">          <!--form : 입력 받은 값을 서버쪽으로 전송, action 어디로 보낼지, method 보내는 방식-->
             <input type="email" name="email" placeholder="email을 입력해주세요." />           <!--사용자가 입력할 수 있는 환경, flask는 name 속성값으로 데이터를 받는다-->
             <input type="password" name="password" placeholder="비밀번호를 입력해주세요."/>

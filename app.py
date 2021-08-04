@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, flash
+from flask import Flask, render_template, request, redirect, session, flash, url_for
 from datetime import datetime
 import pymysql
 
@@ -62,7 +62,7 @@ def regis():
 @app.route('/body_edit', methods=['GET', 'POST'])
 def body_edit():
     if session.get('user') == None:
-        flash("로그인을 해야합니다")
+        flash("로그인을 해야합니다.")
         return redirect('/')
     if request.method == 'POST':
         conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')
@@ -118,6 +118,7 @@ def body(text):
     session['p.user_id'] = body[5]
     cur.execute('select u.nickname, c.contents, c.stampdate, c.comment_id from comment c, users u where u.user_id = c.user_id and c.post_id = "%s"' %(body[4])) #어느 게시물의 해당하는 댓글인지 확인하기 위해서 아까 body[4](post_id)를 이용
     comment=cur.fetchall()
+    
     cur.close()
     conn.close()
     return render_template('body.html', body=body, ment=comment, text=text)
@@ -126,7 +127,7 @@ def body(text):
 @app.route('/ment/<abc>', methods=['POST'])
 def ment(abc):
     if session.get('user') == None:
-        flash("로그인을 해야합니다")
+        flash("로그인을 해야합니다.")
         return redirect('/')
     if request.method == 'POST':
         conn = pymysql.connect(host='192.168.182.128', port=3306, user=pymysql_con.user, passwd=pymysql_con.passwd, database='page')

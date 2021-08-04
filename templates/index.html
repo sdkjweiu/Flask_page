@@ -3,31 +3,52 @@
     <head>
         <title>Main Page</title>
         <meta charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" />
     </head>
     <body>
+        <div>
         {% if get_flashed_messages() %}    {# get_flashed_messages() : jinja2 템플릿에서 flash를 갖고 오는 방법 #}
             {% for message in get_flashed_messages() %}
                 <p>{{ message }}</p>
             {% endfor %}
         {% endif %}
+        </div>
 
+        <div id="main-bar" > <!--style="background-color: yellow;"-->
+            <a href='/' class="alignleft">메인</a>
         {% if session.get('user') == None %}    {# session.get('user') 만 써도 된다  #}
-            <a href='/login'>로그인</a>
+            <a href='/regis' class="alignright">회원가입</a>
+            <a href='/login' class="alignright">로그인</a>
+            
         {% else %}
-            <a href='/profile'>프로필</a>
-            <a href='/body_edit'>글쓰기</a>
-            <a href='/logout'>로그아웃</a>
+            <a href='/body_edit' class="alignright_1">글쓰기</a>
+            <a href='/profile' class="alignright">프로필</a>
+            <a href='/logout' class="alignright">로그아웃</a>
         {% endif %}
+        </div>
 
+        <table id="main-body">
         {% if post %}
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>title</th>
+                <th>nickname</th>
+                <th>stampdate</th>
+            </tr>
+        </thead>
             {% for i in post %}  <!-- 리스트, 튜플, range(), string (=iterator객체) (반복(=나열) 되어있는) 은 for문으로 돌리기 가능 -->
                                 <!--2차원 튜플인 post에서 1차원으로 돌리기 위해 for문을 사용한다, post(게시물)의 갯수만큼(튜플묶음2개=2번) 반복-->
-                <a href='/body/{{i[3]}}'>{{ i[0] }}</a>      <!--2차원 튜플 tuple=((1,2,3), (4,5.6))-->
-                {{ i[1] }}
-                {{ i[2] }}
+                <tr>
+                    <td>{{ i[3] }}</td>
+                    <td><a href='/body/{{i[3]}}' class="alignleft">{{ i[0] }}</a></td>     <!--2차원 튜플 tuple=((1,2,3), (4,5.6))-->
+                    <td>{{ i[1] }}</td>
+                    <td>{{ i[2] }}</td>
             {% endfor %}
-        {% else %}
-
+            {% else %}
+            게시물이 없어요!
         {% endif %}
+            </tr>
+        </table>
     </body>
 </html>

@@ -1,0 +1,48 @@
+body {
+    margin: 0;
+}
+#main-bar{
+    background-color: rgb(224, 224, 224);
+    padding: 20px;
+    font-size: 30px;
+    font-weight: bold;    
+}
+#main-bar a{
+    color: black;
+}
+.alignlfet{
+    float: left;
+    
+}
+.alignright{
+    float: right;
+    padding-right: 20px;
+}
+.alignright_1{
+    float: right;
+}
+#main-body{
+    border-collapse: collapse;
+    
+    padding: 20px;
+    margin-top: 50px;
+    background-color: rgb(224, 224, 224);
+    
+    width: 100%;
+    text-align: center;
+}
+#main-body th{
+    border-bottom: 1px solid black;
+    border-spacing: 5px 5px;
+    font-size: 30px;
+    padding-bottom: 20px;
+}
+#main-body tr td{
+    
+    
+    padding-top: 6px;
+}
+a {
+    text-decoration: none;
+    color: blue;
+}
